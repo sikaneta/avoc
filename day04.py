@@ -52,14 +52,14 @@ def winners(card):
 print("Part 1: %d" % sum(map(lambda x: points(parseLine(x)), mylines)))
 
 #%%
-cards = list(map(parseLine, mylines))
+cardWinners = list(map(winners, map(parseLine, mylines)))
 
 #%%
 def cardScore(k):
-    N = winners(cards[k])
+    N = cardWinners[k]
     return 1 + sum([cardScore(k+l+1) for l in range(N)])
 
 #%% Very slow
-print("Part 2: %d" % sum([cardScore(k) for k in tqdm(range(len(cards)))]))
+print("Part 2: %d" % sum([cardScore(k) for k in tqdm(range(len(mylines)))]))
 
     
