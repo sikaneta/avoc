@@ -6,9 +6,7 @@ Created on Sat Dec  2 08:31:23 2023
 """
 import json
 import requests
-#from tqdm import tqdm
 from collections import defaultdict
-#from itertools import product
 from functools import reduce
 
 #%%
