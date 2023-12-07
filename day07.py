@@ -6,8 +6,7 @@ Created on Sat Dec  2 08:31:23 2023
 """
 import json
 import requests
-from functools import reduce, cmp_to_key
-import numpy as np
+from functools import cmp_to_key
 from collections import defaultdict
 
 #%%
