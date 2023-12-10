@@ -5,7 +5,7 @@ Created on Sat Dec  2 08:31:23 2023
 @author: ishuwa.sikaneta
 """
 import json
-import requestsreduce
+import requests
 from scipy.special import comb
 
 #%%
