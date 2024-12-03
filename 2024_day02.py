@@ -7,7 +7,7 @@ Created on Sat Dec  2 08:31:23 2023
 #%%
 import json
 import requests
-import re
+from itertools import combinations
 
 #%%
 avocjson = r"C:\Users\ishuwa.sikaneta\local\src\avoc2024.json"
@@ -16,20 +16,22 @@ with open(avocjson, "r") as f:
 session = requests.session()
 scook = requests.utils.cookiejar_from_dict(cookies)
 session.cookies.update(scook)
-resp = session.get("https://adventofcode.com/2024/day/3/input")
+resp = session.get("https://adventofcode.com/2024/day/2/input")
 
 #%%
-lines = resp.text
+lines = resp.text.split('\n')[:-1]
 
-testlines = """xmul(2,4)%&mul[3,7]!@^do_not_mul(5,5)+mul(32,64]then(mul(11,8)mul(8,5))"""
+testlines = """
+7 6 4 2 1
+1 2 7 8 9
+9 7 6 2 1
+1 3 2 4 5
+8 6 4 4 1
+1 3 6 7 9
+""".split('\n')[1:-1]
 
 #%%
-def mul(x,y):
-    return x*y
-#%%
-pool = testlines
-re_str = "mul[(][0-9]{1,3},[0-9]{1,3}[)]"
-part1 = sum([eval(atom) for atom in re.findall(re_str, pool)])
+rows = [[int(y)for y in x.split()] for x in lines ]
 
 #%%
 f = lambda x: int((x[0]>=-3 and x[1]<=-1) or (x[0]>=1 and x[1]<=3))
