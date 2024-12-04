@@ -29,8 +29,8 @@ def mul(x,y):
 
 #%%
 pool = lines
-def run_compute(pool):
-    re_str = "mul[(][0-9]{1,3},[0-9]{1,3}[)]"
+    
+def run_compute(pool, re_str = "mul[(][0-9]{1,3},[0-9]{1,3}[)]"):
     return sum([eval(atom) for atom in re.findall(re_str, pool)])
 
 #%%
