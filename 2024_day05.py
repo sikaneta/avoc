@@ -7,7 +7,8 @@ Created on Sat Dec  2 08:31:23 2023
 #%%
 import json
 import requests
-from tqdm import tqdm
+from itertools import combinations
+import numpy as np
 
 #%%
 avocjson = r"C:\Users\ishuwa.sikaneta\local\src\avoc2024.json"
@@ -16,72 +17,73 @@ with open(avocjson, "r") as f:
 session = requests.session()
 scook = requests.utils.cookiejar_from_dict(cookies)
 session.cookies.update(scook)
-resp = session.get("https://adventofcode.com/2024/day/7/input")
+resp = session.get("https://adventofcode.com/2024/day/5/input")
 
 #%%
-lines = resp.text.split('\n')[0:-1]
+rules, lines = resp.text.split('\n\n')
+lines = lines[:-1]
 
 #%%
-testlines = """
-190: 10 19
-3267: 81 40 27
-83: 17 5
-156: 15 6
-7290: 6 8 6 15
-161011: 16 10 13
-192: 17 8 14
-21037: 9 7 18 13
-292: 11 6 16 20
-""".split('\n')[1:-1]
+rules, lines = """
+47|53
+97|13
+97|61
+97|47
+75|29
+61|13
+75|53
+29|13
+97|29
+53|29
+61|53
+97|53
+61|29
+47|13
+75|47
+97|75
+47|61
+75|61
+47|29
+75|13
+53|13
+
+75,47,61,53,29
+97,61,53,29,13
+75,29,13
+75,97,47,61,53
+61,13,29
+97,13,75,29,47
+"""[1:-1].split('\n\n')
 
 #%%
-def add(x,y):
-    return x + y
-def mul(x,y):
-    return x * y
-def cat(x,y):
-    return int("%d%d" % (x,y))
+rules = rules.split('\n')
+lines = [l.split(',') for l in lines.split('\n')]
 
-def chomp(target, val, array, operators = [add, mul]):
-    if val > target or len(array) ==0:
-        return False
-    
-    candidates = [f(val,array[0]) for f in operators]
-    
-    if any([x==target and len(array)==1 for x in candidates]):
-        return True
-    else:
-        return any([chomp(target, c, array[1:], operators = operators) 
-                    for c in candidates]) 
-    return False
-    
-    
 #%%
-def parse(operation):
-    val, elements = operation.split(': ')
-    val = int(val)
-    elements = [int(x) for x in elements.split(" ")]
-    return val, elements
+def checkline(line, rules):
+    for x,y in combinations(line,2):
+        if "%s|%s" % (y,x) in rules:
+            return False
+    return True
+
+#%%
+part1 = [int(line[int(len(line)/2)]) 
+         for line in lines if checkline(line, rules)]
+
+print("Part 1: %d" % sum(part1))
+
+#%%
+def reorder(line, rules):
+    for x,y in combinations(range(len(line)),2):
+        if "%s|%s" % (line[y],line[x]) in rules:
+            """ Switch around """
+            line[x],line[y] = line[y],line[x]
+            if not checkline(line, rules):
+                return reorder(line, rules)
+    return line
 
 
 #%%
-operations = lines
-part1 = 0
-for operation in tqdm(operations):
-    val, elements = parse(operation)
-    if chomp(val, elements[0], elements[1:]):
-        part1 += val
-
-print("Part 1: %d" % part1)
-
-#%%
-operations = lines
-part2 = 0
-for operation in tqdm(operations):
-    val, elements = parse(operation)
-    if chomp(val, elements[0], elements[1:], [add,mul,cat]):
-        part2 += val
-
-print("Part 2: %d" % part2)
-
-
+part2 = [int(reorder(line, rules)[int(len(line)/2)]) 
+         for line in lines if not checkline(line, rules)]
+print("Part 2: %d" % sum(part2))
