@@ -55,7 +55,7 @@ def procnum(hist):
     return new_hist
 
 #%%
-seed = [int(x) for x in inputseed.split()]
+seed = [int(x) for x in testseed.split()]
 hist = defaultdict(int)
 for val in seed:
     hist[val] += 1
