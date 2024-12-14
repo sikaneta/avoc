@@ -4,7 +4,7 @@ save_data_on_exit = True
 save_history = True
 save_non_project_files = False
 project_type = 'empty-project-type'
-recent_files = ['2024_day12.py', '..\\..\\..\\OneDrive - ESA\\Documents\\ESTEC\\Envision\\visor\\Python\\algorithms.py', '..\\..\\..\\OneDrive - ESA\\Documents\\ESTEC\\Envision\\visor\\Python\\plan.py']
+recent_files = ['2024_day13.py', '..\\..\\..\\OneDrive - ESA\\Documents\\ESTEC\\Envision\\visor\\Python\\algorithms.py']
 
 [main]
 version = 0.2.0
