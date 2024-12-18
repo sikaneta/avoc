@@ -81,22 +81,6 @@ def printRobots(robots, M, N):
         array[robot[0][1], robot[0][0]] = 1
     plt.figure()
     plt.imshow(array)
-    
-def checkConnected(robots):
-    items = [(x[0][0], x[0][1]) for x in robots]
-    for item in items:
-        test = [(item[0]+1, item[1]),
-                (item[0]-1, item[1]),
-                (item[0], item[1]+1),
-                (item[1], item[1]-1),
-                (item[0]-1, item[1]-1),
-                (item[0]-1, item[1]+1),
-                (item[0]+1, item[1]-1),
-                (item[0]+1, item[1]+1)]
-        for t in test:
-            if t not in items:
-                return False
-    return True
         
 #%%
 myrobots = inputrobots
