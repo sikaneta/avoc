@@ -26,57 +26,36 @@ prod = resp.text[:-1].split('\n')
 
 #%%
 test1 = """
-5,4
-4,2
-4,5
-3,0
-2,1
-6,3
-2,4
-1,5
-0,6
-3,3
-2,6
-5,1
-1,2
-5,5
-2,5
-6,5
-1,4
-0,4
-6,4
-1,1
-6,1
-1,0
-0,5
-1,6
-2,0
+###############
+#...#...#.....#
+#.#.#.#.#.###.#
+#S#...#.#.#...#
+#######.#.#.###
+#######.#.#...#
+#######.#.###.#
+###..E#...#...#
+###.#######.###
+#...###...#...#
+#.#####.#.###.#
+#.#...#.#.#...#
+#.#.#.#.#.#.###
+#...#...#...###
+###############
 """[1:-1].split('\n')
 
-#%%
-def makemaze(xcrds, Nbytes, N):
-    mymap = [['#']*(N+2)]
-    mymap += [['#'] + ['.']*N + ['#'] for k in range(N)]
-    mymap += [['#']*(N+2)]
-    for crd in xcrds[:Nbytes]:
-        mymap[crd[1]][crd[0]] = '#'
-    mymap[1][1] = 'S'
-    mymap[N][N] = 'E'
-    return mymap
 
 #%%
-def propagate(mymap, mapcrds, q, r, thresh = 0):
+def propagate(mymap, mapcrds, q, r, cheat = (-10,-10)):
     path = q.get()
     crd = path[-1]
     
     path_val = val(path)
     if mapcrds[crd[0]][crd[1]] is None:
         mapcrds[crd[0]][crd[1]] = path_val
-    elif path_val > mapcrds[crd[0]][crd[1]] + thresh:
-        return
+    # elif path_val > mapcrds[crd[0]][crd[1]] + thresh:
+    #     return
     else:
         return
-        #mapcrds[crd[0]][crd[1]] = path_val
     
     if mymap[crd[0]][crd[1]] == 'E':
         r.append(path)
@@ -85,7 +64,8 @@ def propagate(mymap, mapcrds, q, r, thresh = 0):
     
     new = [(crd[0]+shift[0], crd[1]+shift[1])
            for shift in adjacent 
-           if mymap[crd[0]+shift[0]][crd[1]+shift[1]] !='#']
+           if ((mymap[crd[0]+shift[0]][crd[1]+shift[1]] !='#')
+               or ((crd[0]+shift[0], crd[1]+shift[1]) == cheat))]
         
     for n in new:
         if n not in path:
@@ -111,12 +91,10 @@ def pltMap(mymap, dd = []):
     plt.imshow(data)
     
 #%%
-def runBytes(xcrds, idx, mazeN):
-    mymap = makemaze(xcrds, idx, mazeN)
+def runMaze(mymap, maze_start, cheat = (-10,-10)):
     M = len(mymap)
     N = len(mymap[0])
     mapcrds = [[None]*N for k in range(M)]
-    maze_start = (1,1)
     
     q = queue.Queue()
     r = list()
@@ -124,17 +102,29 @@ def runBytes(xcrds, idx, mazeN):
     
     counter = 0
     while not q.empty():
-        propagate(mymap, mapcrds, q, r, thresh = 0)
+        propagate(mymap, mapcrds, q, r, cheat = cheat)
         counter += 1
-        #if counter % 10000 == 1:
-            #print(q.qsize())
         
     if len(r) > 0:
-        pltMap(mymap, r[-1])
         return r
 
 #%%
-xcrds = [tuple([int(y)+1 for y in x.split(",")]) for x in prod] 
+mymap = [[x for x in row] for row in test1] 
+M = len(mymap)
+N = len(mymap[0])
+maze_start = (None,None)
+mapcrds = [[None]*N for k in range(M)]
+for m,row in enumerate(mymap):
+    for n,col in enumerate(row):
+        if col == 'S':
+            maze_start = (m,n)
+        if col == 'E':
+            maze_end = (m,n)
+
+#%%
+pltMap(mymap)
+r = runMaze(mymap, maze_start, cheat = (1,8))
+pltMap(mymap, r[0])
 
 #%% Display a single path
 runBytes(xcrds, 3000, 71)
