@@ -4,6 +4,7 @@ Created on Sat Dec  2 08:31:23 2023
 
 @author: ishuwa.sikaneta
 """
+
 #%%
 import json
 import requests
@@ -11,6 +12,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import queue
 from functools import reduce
+from collections import defaultdict
+from tqdm import tqdm
 
 #%%
 avocjson = r"C:\Users\ishuwa.sikaneta\local\src\avoc2024.json"
@@ -19,7 +22,7 @@ with open(avocjson, "r") as f:
 session = requests.session()
 scook = requests.utils.cookiejar_from_dict(cookies)
 session.cookies.update(scook)
-resp = session.get("https://adventofcode.com/2024/day/19/input")
+resp = session.get("https://adventofcode.com/2024/day/20/input")
 
 #%%
 prod = resp.text[:-1].split('\n')
@@ -108,8 +111,29 @@ def runMaze(mymap, maze_start, cheat = (-10,-10)):
     if len(r) > 0:
         return r
 
+def findCheats(mymap):
+    lr = [(0,-1),(0,1)]
+    ud = [(-1,0),(1,0)]
+    vcheats = []
+    hcheats = []
+    ok = ['.', 'E', 'S']
+    for m,row in enumerate(mymap):
+        for n,col in enumerate(row):
+            if col == '#':
+                try:
+                    lr_items = all([mymap[m+r][n+c] in ok for r,c in lr])
+                    ud_items = all([mymap[m+r][n+c] in ok for r,c in ud])
+                    if lr_items^ud_items:
+                        if lr_items:
+                            hcheats.append([(m,n-1), (m,n+1)])
+                        else:
+                            vcheats.append([(m-1,n), (m+1,n)])
+                except IndexError:
+                    pass
+    return hcheats, vcheats
+
 #%%
-mymap = [[x for x in row] for row in test1] 
+mymap = [[x for x in row] for row in prod] 
 M = len(mymap)
 N = len(mymap[0])
 maze_start = (None,None)
@@ -122,12 +146,36 @@ for m,row in enumerate(mymap):
             maze_end = (m,n)
 
 #%%
-pltMap(mymap)
-r = runMaze(mymap, maze_start, cheat = (1,8))
+r = runMaze(mymap, maze_start)
 pltMap(mymap, r[0])
+hcheats, vcheats = findCheats(mymap)
+dd = [abs(r[0].index(y) - r[0].index(x))-2 for x,y in hcheats + vcheats]
+h = defaultdict(int)
+for k in dd:
+    h[k] += 1
 
 #%% Display a single path
-runBytes(xcrds, 3000, 71)
+part1 = sum([v for k,v in h.items() if k >= 100])
+print("Part1: %d" % part1)
 
-""" This part done manually until we find the idx in runBytes that causes
-    the path to fail. A simple manual binary search works fine. """
+#%% Part 2
+path = r[0]
+pLen= len(path)
+
+#%%
+def boxLen(box):
+    return (abs(box[0][0] - box[1][0])+ 
+            abs(box[0][1] - box[1][1]))
+    
+#%%
+tally = defaultdict(int)
+for cN in tqdm(range(100,pLen), "finding shortcuts"):
+    crds = [[path[k], path[k+cN+1]] for k,_ in enumerate(path) 
+            if k + cN + 1 < pLen]
+    bLen = [boxLen(x) for x in crds]
+    bLen = [b for b in bLen if b <= 20]
+    for bL in bLen:
+        tally[cN - bL +1] += 1
+        
+#%%
+print("Part2: %d" % sum([v for k,v in tally.items() if k>= 100]))

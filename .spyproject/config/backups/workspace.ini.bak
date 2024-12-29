@@ -4,7 +4,7 @@ save_data_on_exit = True
 save_history = True
 save_non_project_files = False
 project_type = 'empty-project-type'
-recent_files = ['2024_day18.py', '2024_day16.py']
+recent_files = ['2024_day19.py', '2024_day20.py', '2024_day16.py']
 
 [main]
 version = 0.2.0
